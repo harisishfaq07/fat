@@ -1,0 +1,113 @@
+- if @user == current_user && Setting.per_user_locale
+  %div#options(style="float:right")
+    #{t :profile_language}: #{link_to(language_for(current_user), "#", id: :locale)}
+
+%table(cellspacing="0" cellpadding="0")
+  %tr
+    %td(valign="top")
+      = avatar_for(@user, style: "margin: 0px 10px 0px 0px")
+    %td(valign="top")
+      %h3= h(@user.full_name) + " (#{@user.username})"
+      - if !@user.title.blank? && !@user.company.blank?
+        %div= t(:works_at, job_title: h(@user.title), company: h(@user.company))
+      - else
+        = h(@user.title) unless @user.title.blank?
+        = h(@user.company) unless @user.company.blank?
+      %br
+      %h3{:class => "info"} Show Contact Information 
+      %h3{:class => "hideinfo"} Hide Contact Information
+       
+      %div{:class => "show"}
+        %div
+          - unless @user.email.blank?
+            #{t :email}: #{auto_link(@user.email)}
+          - unless @user.alt_email.blank?
+            #{t :or} #{auto_link(@user.alt_email)}
+          - if current_user.alt_emails.count > 0
+            #{t :or}
+            = link_to "View all Alternate Emails" , view_alt_email_alt_emails_path
+        - if !@user.phone.blank? && !@user.mobile.blank?
+          %div #{t :phone}: <b>#{@user.phone}</b>, #{t :mobile}: <b>#{@user.mobile}</b>
+        - else
+          - if @user.phone.present?
+            = t(:phone) + ":"
+            = content_tag(:b, @user.phone)
+          - if @user.mobile.present?
+            = t(:mobile) + ":"
+            = content_tag(:b, @user.mobile)
+        %div= spacer
+        - if !@user.aim.blank? && !@user.yahoo.blank? && !@user.google.blank? && !@user.telegram.blank?
+          %h4 Instant Messaging
+          %div
+            = t(:"AOL IM") + ":"
+            %a{:href => "#{@user.aim}"} #{@user.aim}  
+            = t(:", Yahoo") + ":"
+            %a{:href => "#{@user.yahoo}"} #{@user.yahoo}  
+            = t(:", Google") + ":"
+            %a{:href => "#{@user.google}"} #{@user.google} 
+            = t(:", Telegram") + ":"
+            %a{:href => "#{@user.telegram}"} #{@user.telegram}
+        - else
+          -if @user.aim.present? || @user.yahoo.present? || @user.google.present? || @user.telegram.present?
+            %h4 Instant Messaging
+            - if @user.aim.present?
+              = t(:"AOL IM") + ":"
+              %a{:href => "#{@user.aim}"} #{@user.aim} 
+            - if @user.yahoo.present?
+              = t(:"Yahoo") + ":"
+              %a{:href => "#{@user.yahoo}"} #{@user.yahoo}
+            - if @user.google.present?
+              = t(:"Google") + ":"
+              %a{:href => "#{@user.google}"} #{@user.google}
+            - if @user.telegram.present?
+              = t(:"Telegram") + ":"
+              %a{:href => "#{@user.telegram}"} #{@user.telegram}
+        %div= spacer
+        - if !@user.zoom.blank? && !@user.google_duo.blank? && !@user.emo.blank? && !@user.skype.blank?
+          %h4 Video Calling
+          %div
+            = t(:"Zoom") + ":"
+            %a{:href => "#{@user.zoom}"} #{@user.zoom}  
+            = t(:", Google Duo") + ":"
+            %a{:href => "#{@user.google_duo}"} #{@user.google_duo}  
+            = t(:", Emo") + ":"
+            %a{:href => "#{@user.emo}"} #{@user.emo} 
+            = t(:", Skype") + ":"
+            %a{:href => "#{@user.skype}"} #{@user.skype}
+        - else
+          -if @user.zoom.present? || @user.google_duo.present? || @user.emo.present? || @user.skype.present?
+            %h4 Instant Messaging
+            - if @user.aim.present?
+              = t(:"Zoom") + ":"
+              %a{:href => "#{@user.zoom}"} #{@user.zoom}
+            - if @user.google_duo.present?
+              = t(:"Google Duo") + ":"
+              %a{:href => "#{@user.google_duo}"} #{@user.google_duo}
+            - if @user.emo.present?
+              = t(:"Emo") + ":"
+              %a{:href => "#{@user.emo}"} #{@user.emo}
+            - if @user.skype.present?
+              = t(:"Skype") + ":"
+              %a{:href => "#{@user.skype}"} #{@user.skype}
+  - if Setting.per_user_locale
+    %script= render "languages"
+
+
+:javascript
+          $(document).ready(function(){
+            $(".show").hide();
+            $(".hideinfo").hide();
+            $(".info").click(function(){
+             $(".show").slideDown();
+             $(".hideinfo").show();
+              $(".info").hide();
+            })
+             $(".hideinfo").click(function(){
+             $(".show").slideUp();
+             $(".hideinfo").hide();
+              $(".info").show();
+            })
+            })
+
+
+

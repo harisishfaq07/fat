@@ -1,0 +1,87 @@
+- edit ||= false
+.section
+  %table
+    %tr
+      %td
+        .label.top.req #{t :username}:
+        = f.text_field :username
+      %td= spacer
+      %td
+        .label.top.req #{t :email}:
+        = f.text_field :email , {:class => "email"}
+        %h4{:class => "invalid_email"} Email not formatted
+        %h4{:class => "valid_email"} Email formatted 
+    %tr
+      %td
+        .label #{t :password}:
+        = f.password_field :password , {:class => "password"}
+      %td= spacer
+      %td
+        .label #{t :password_confirmation}:
+        = f.password_field :password_confirmation , {:class => "confirm_password"}
+        %h4{:class => "match"} Password matched
+        %h4{:class => "notmatch"} Password not matched
+    %tr
+      %td(colspan=3)
+        .check_box(style="margin-top:6px")
+          -# Sorry, you can't revoke Admin rights from yourself.
+          = f.check_box(:admin, { disabled: edit && @user == current_user })
+          %label{for: 'user_admin'}
+            = t(:user_is_admin)
+
+.subtitle #{t :personal_information}
+.section
+  %table
+    %tr
+      %td
+        .label #{t :first_name}:
+        = f.text_field :first_name , {:placeholder => "John"}
+      %td= spacer
+      %td
+        .label #{t :last_name}:
+        = f.text_field :last_name , {:placeholder => "Smith"}
+    %tr
+      %td
+        .label #{t :job_title}:
+        = f.text_field :title , {:placeholder => "Manager etc"}
+      %td= spacer
+      %td
+        .label #{t :company}:
+        = f.text_field :company , {:placeholder => "Company name..."}
+
+.subtitle #{t :group_memberships}
+.section
+  %table
+    %tr
+      %td
+        .label #{t :groups}:
+        = f.select :group_ids, Group.all.map {|g| [g.name, g.id]}, {}, multiple: true, class: 'select2'
+:javascript
+     $(document).ready(function(){
+       $(".match").hide();
+       $(".notmatch").hide();
+       $(".invalid_email").hide();
+        $('.valid_email').hide();
+       $(".confirm_password").keyup(function(){
+          if($(".password").val() == $(".confirm_password").val()){
+             $(".match").show().css("color" , "green");
+             $(".notmatch").hide();
+          }else{
+             $(".match").hide();
+             $(".notmatch").show().css("color" , "red");
+          }
+       })
+       $(".email").keyup(function(){
+          if(validateEmail($(".email").val())==false){
+                $('.invalid_email').show().css("color" , "red");
+                $('.valid_email').hide();
+            }else{
+               $('.valid_email').show().css("color" , "green");
+               $('.invalid_email').hide();
+            }
+       }) 
+     })
+    function validateEmail($email) {
+      var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+      return emailReg.test( $email );
+     }

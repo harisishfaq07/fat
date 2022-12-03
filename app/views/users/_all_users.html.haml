@@ -1,0 +1,42 @@
+%br
+%h3 Total Users - #{@users.count}
+%br
+%table
+  %tr
+    %th Username
+    %th Email
+    %th Action
+  - @users.each do |u|
+    %tr
+      %td= u.username
+      %td= u.email
+      %td
+        .dropdown
+          %button.btn.btn-secondary.dropdown-toggle{"aria-expanded" => "false", "data-bs-toggle" => "dropdown", :type => "button"}
+            Action
+          %ul.dropdown-menu
+            %li
+              = link_to "show" , user_path(u.id) 
+            %li
+              -if u.suspended?
+                = link_to "reactive" , reactive_user_user_path(u) , method: :put ,:style=> 'color: black; text-align: center;'
+              -else 
+                = link_to "suspend" , suspend_user_user_path(u) , method: :put , :style=> 'color: black; text-align: center;'
+            %li
+              = link_to "Delete?" , delete_user_user_path(u) , method: :delete , :style=> 'color: black; text-align: center;'
+:css
+  table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #dddddd;
+  }

@@ -1,0 +1,130 @@
+
+
+%ul.nav.nav-tabs
+  %li.nav-item
+    %a.nav-link.active{"aria-current" => "page", :href => "#" , :class => "admin" , :value => "admin"} Admins
+  %li.nav-item
+    %a.nav-link{:href => "#" , :class => "users" , :value => "ok" } Users
+  %li.nav-item
+    %a.nav-link{:href => "#" ,  :class => "suspend" , :value => 'suspent'} Suspend Accounts
+%br
+= search_form_for @q do |form|
+  = form.search_field :email_cont , {:class => "search_email"}
+  = form.submit "search" , {:class=> "search"}
+- if @u.present?
+  %br
+  %h3 Search Results - #{@u.count} 
+  %br
+    %table
+      %tr
+        %th Username
+        %th Email
+        %th Action
+      - @u.each do |u|
+        %tr
+          %td= u.username
+          %td= u.email
+          %td
+            .dropdown
+              %button.btn.btn-secondary.dropdown-toggle{"aria-expanded" => "false", "data-bs-toggle" => "dropdown", :type => "button"} 
+                Action
+              %ul.dropdown-menu
+                %li
+                  = link_to "show" , user_path(u.id) , :style=> 'color: black; text-align: center;'
+                %li
+                  -if u.suspended?
+                    = link_to "reactive" , reactive_user_user_path(u) , method: :put,:style=> 'color: black; text-align: center;'
+                  -else 
+                    = link_to "suspend" , suspend_user_user_path(u) , method: :put, :style=> 'color: black; text-align: center;'
+                %li
+                  = link_to "Delete?" , delete_user_user_path(u) , method: :delete , :style=> 'color: black; text-align: center;'
+
+
+  
+%div.show_data
+
+
+:javascript
+    $(document).ready(function(e){
+       $(".display_search").hide();
+        $(".users").click(function(){
+          var val = false
+          send_data = {admin: val}
+          $.ajax({
+            type: "GET",
+            URL: "/users" ,
+            beforeSend: function(xhr) {xhr.setRequestHeader("X-CSRF-Token", $("meta[name='csrf-token']").attr("content"))},
+            data: send_data,
+            dataType: "script",
+            success: function(data){
+             console.log(data);
+            }
+          })
+        })
+    
+        $(".admin").click(function(){
+          var val = true
+           send_data = {admin: val}
+            $.ajax({
+            type: "GET",
+            URL: "/users" ,
+            beforeSend: function(xhr) {xhr.setRequestHeader("X-CSRF-Token", $("meta[name='csrf-token']").attr("content"))},
+            data: send_data,
+            dataType: "script",
+            success: function(data){
+             console.log(data);
+            }
+          })
+        })
+
+       $(".suspend").click(function(){
+          var val = true
+           send_data = {suspend: val}
+            $.ajax({
+            type: "GET",
+            URL: "/users" ,
+            beforeSend: function(xhr) {xhr.setRequestHeader("X-CSRF-Token", $("meta[name='csrf-token']").attr("content"))},
+            data: send_data,
+            dataType: "script",
+            success: function(data){
+             console.log(data);
+            }
+          })
+        })
+
+       $(".search_email").click(function(e){
+        $(".display_search").show();
+         var val = $(".search_email").val()
+           send_data = {q: val}
+            $.ajax({
+            type: "GET",
+            URL: "/users" ,
+            beforeSend: function(xhr) {xhr.setRequestHeader("X-CSRF-Token", $("meta[name='csrf-token']").attr("content"))},
+            data: send_data,
+            dataType: "script",
+            success: function(data){
+             console.log(data);
+            }
+          })
+        })
+      })
+:css
+  table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #dddddd;
+  }
+
+  coluo{
+      background-color: #dddddd;
+  }

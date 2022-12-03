@@ -1,0 +1,9 @@
+- id = dom_id(@user)
+
+- if @user.destroyed?
+  $('##{id}').css('background-color', '#ffe4e1').slideUp(250).remove();
+- else
+  crm.flick('#{dom_id(@user, :confirm)}', 'remove');
+  $('#flash').html('#{j flash[:warning]}');
+  crm.flash('warning');
+  - flash[:warning] = nil

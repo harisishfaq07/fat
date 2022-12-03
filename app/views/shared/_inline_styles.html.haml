@@ -1,0 +1,5 @@
+-# Generate dynamic styles that get embedded on the page.
+- content_for :styles do
+
+  = hook(:inline_styles, self, local_assigns)
+

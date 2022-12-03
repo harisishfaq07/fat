@@ -1,0 +1,114 @@
+# frozen_string_literal: true
+
+source 'https://rubygems.org'
+
+# Uncomment the database that you have configured in config/database.yml
+# ----------------------------------------------------------------------
+
+case ENV['CI'] && ENV['DB']
+when 'sqlite'
+  gem 'sqlite3', '~> 1.4.0'
+when 'mysql'
+  gem 'mysql2'
+when 'postgres'
+  gem 'pg'
+else
+  gem 'pg'
+end
+
+# Removes a gem dependency
+def remove(name)
+  @dependencies.reject! { |d| d.name == name }
+end
+
+# Replaces an existing gem dependency (e.g. from gemspec) with an alternate source.
+def gem(name, *args)
+  remove(name)
+  super
+end
+
+# Bundler no longer treats runtime dependencies as base dependencies.
+# The following code restores this behaviour.
+# (See https://github.com/carlhuda/bundler/issues/1041)
+spec = Bundler.load_gemspec(File.expand_path('fat_free_crm.gemspec', __dir__))
+spec.runtime_dependencies.each do |dep|
+  gem dep.name, *dep.requirement.as_list
+end
+
+# Remove premailer auto-require
+gem 'premailer', require: false
+
+# Remove fat_free_crm dependency, to stop it from being auto-required too early.
+remove 'fat_free_crm'
+
+group :development do
+  # don't load these gems in travis
+  unless ENV["CI"]
+    gem "letter_opener"
+    gem 'capistrano'
+    gem 'capistrano-bundler'
+    gem 'capistrano-rails'
+    gem 'capistrano-rvm'
+    gem 'guard'
+    gem 'guard-rspec'
+    gem 'guard-rails'
+    gem 'rb-inotify', require: false
+    gem 'rb-fsevent', require: false
+    gem 'rb-fchange', require: false
+    gem 'brakeman', require: false
+  end
+end
+
+group :development, :test do
+  gem 'rails-controller-testing'
+  gem 'rspec-rails'
+  gem 'rspec-activemodel-mocks'
+  gem 'headless'
+  gem 'byebug'
+  gem 'pry-rails' unless ENV["CI"]
+  gem 'factory_bot_rails', '~> 6.0'
+  gem 'rubocop'
+  gem 'rainbow'
+  gem 'puma' # used by capybara 3
+end
+
+group :test do
+  gem 'capybara'
+  gem 'selenium-webdriver'
+  gem 'webdrivers'
+  gem 'database_cleaner'
+  gem 'zeus', platform: :ruby unless ENV["CI"]
+  gem 'timecop'
+  gem 'sqlite3', '~> 1.4.0'
+end
+
+group :heroku do
+  gem 'rails_12factor'
+  gem 'puma'
+end
+
+gem 'responds_to_parent', git: 'https://github.com/CloCkWeRX/responds_to_parent.git', branch: 'patch-2' # Temporarily pointed at git until https://github.com/zendesk/responds_to_parent/pull/7 is released
+gem 'acts_as_commentable', git: 'https://github.com/fatfreecrm/acts_as_commentable.git', branch: 'rails-61' # Our fork
+gem 'sassc-rails'
+gem 'coffee-rails'
+gem 'uglifier'
+gem 'execjs'
+# gem 'therubyracer', platform: :ruby unless ENV["CI"]
+gem 'mini_racer'
+gem 'nokogiri', '>= 1.8.1'
+gem 'activemodel-serializers-xml'
+gem 'bootsnap', require: false
+gem 'devise', '~>4.6'
+gem 'devise-i18n'
+gem "devise-encryptable"
+gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
+gem 'activejob'
+gem 'ransack_ui'
+gem 'ransack', '~> 2.6'
+gem 'bootstrap', '5.0.0'
+gem 'haml', '~> 5.2.2'
+gem 'bootstrap-icons', '~> 1.0', '>= 1.0.12'
+# Google authentication Gem
+gem "omniauth"
+gem "omniauth-google-oauth2"
+gem "omniauth-rails_csrf_protection"  
